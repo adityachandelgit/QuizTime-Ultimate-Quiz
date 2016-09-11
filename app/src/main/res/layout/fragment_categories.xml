@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:text="Select Category"
+        android:textColor="#fff"
+        android:id="@+id/textView"
+        android:textSize="35sp"
+        android:layout_gravity="center_horizontal" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView"
+        android:layout_gravity="center_horizontal" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="Geography"
+                android:id="@+id/cat_geography_button"
+                android:textColor="#fff"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:background="#80ED145B"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="Entertainment"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:id="@+id/cat_entertainment_button"
+                android:textColor="#fff"
+                android:background="#80EC008C"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="History"
+                android:id="@+id/cat_history_button"
+                android:textColor="#fff"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:background="#80662D91"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="Art and Literature"
+                android:id="@+id/cat_arts_button"
+                android:textColor="#fff"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:background="#802E3192"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="Science and Nature"
+                android:id="@+id/cat_science_button"
+                android:textColor="#fff"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:background="#800072BC"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="Sports and Games"
+                android:id="@+id/cat_sports_button"
+                android:textColor="#fff"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:background="#8000A99D"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="Economics"
+                android:id="@+id/cat_economics_button"
+                android:textColor="#fff"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:background="#8000A651"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="Religion"
+                android:id="@+id/cat_religion_button"
+                android:textColor="#fff"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:background="#808DC73F"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="People"
+                android:id="@+id/cat_people_button"
+                android:textColor="#fff"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:background="#80FFF200"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="Technology"
+                android:id="@+id/cat_technology_button"
+                android:textColor="#fff"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:background="#80F7941D"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="Food"
+                android:id="@+id/cat_food_button"
+                android:textColor="#fff"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:background="#80F26522"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="Music"
+                android:id="@+id/cat_music_button"
+                android:textColor="#fff"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:background="#80ED1C24"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="Politics"
+                android:id="@+id/cat_politics_button"
+                android:textColor="#fff"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:background="#80ED145B"/>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

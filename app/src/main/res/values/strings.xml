@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Quiz Time</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_hosting">HostingActivity</string>
+    <string name="title_activity_test">TestActivity</string>
+    <string name="title_activity_geography_fragment">GeographyFragment</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_dashboard">DashboardActivity</string>
+    <string name="title_activity_playing">PlayingActivity</string>
+    <string name="title_activity_categoriesss">CategoriesssActivity</string>
+    <string name="title_activity_categories1">Categories1Activity</string>
+
+    <string name="banner_ad_unit_id">ca-app-pub-7768394173357020/6685624994</string>
+    <string name="banner_ad_unit_id_test">ca-app-pub-3940256099942544/6300978111</string>
+</resources>
