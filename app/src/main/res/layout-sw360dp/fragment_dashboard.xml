@@ -4,123 +4,123 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/logoTextview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Quiz Time"
-        android:id="@+id/logoTextview"
-        android:layout_gravity="center_horizontal"
-        android:textSize="60sp"
-        android:textColor="@color/android_green"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="26dp" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="26dp"
+        android:text="Quiz Time"
+        android:textColor="@color/android_green"
+        android:textSize="60sp" />
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Play All Questions"
         android:id="@+id/playAllButton"
-        android:textColor="#fff"
-        android:layout_gravity="center"
-        android:background="@drawable/clickable_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/logoTextview"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="30dp"
+        android:layout_gravity="center"
         android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp" />
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/clickable_button"
+        android:text="Play All Questions"
+        android:textColor="#fff" />
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Play Categories"
-        android:layout_gravity="center"
         android:id="@+id/categoryButton"
-        android:textColor="#fff"
-        android:background="@drawable/clickable_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/playAllButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        android:layout_marginLeft="25dp" />
+        android:layout_marginTop="20dp"
+        android:background="@drawable/clickable_button"
+        android:text="Play Categories"
+        android:textColor="#fff" />
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="High Score"
-        android:layout_gravity="center"
         android:id="@+id/mainScoreButton"
-        android:textColor="#fff"
-        android:background="@drawable/clickable_button"
-        android:layout_below="@+id/categoryButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="25dp"
-        android:layout_marginLeft="25dp" />
-
-    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Settings"
-        android:layout_gravity="center"
-        android:id="@+id/mainSettingsButton"
-        android:textColor="#fff"
-        android:background="@drawable/clickable_button"
-        android:layout_below="@+id/mainScoreButton"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="20dp"
+        android:layout_below="@+id/categoryButton"
+        android:layout_gravity="center"
+        android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        android:layout_marginLeft="25dp" />
+        android:layout_marginTop="20dp"
+        android:background="@drawable/clickable_button"
+        android:text="High Score"
+        android:textColor="#fff" />
+
+    <Button
+        android:id="@+id/mainSettingsButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/mainScoreButton"
+        android:layout_gravity="center"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/clickable_button"
+        android:text="Settings"
+        android:textColor="#fff" />
 
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:padding="11dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center"
-        android:gravity="center"
         android:id="@+id/linearLayout2"
-        android:layout_marginTop="25dp"
-        android:layout_below="@+id/mainSettingsButton"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/mainSettingsButton"
+        android:layout_gravity="center"
+        android:layout_marginTop="25dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="11dp">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/imageViewRate"
-            android:src="@drawable/star48"
-            android:layout_weight="1"/>
-
-        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/star48" />
+
+        <ImageView
             android:id="@+id/imageViewWFS"
-            android:src="@drawable/wfs"
-            android:layout_weight="1"/>
-
-        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/wfs" />
+
+        <ImageView
             android:id="@+id/imageViewNoAds"
-            android:src="@drawable/noads48"
-            android:layout_weight="1"/>
-
-        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageViewWFC"
-            android:src="@drawable/wfc"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:src="@drawable/noads48" />
+
+        <!--<ImageView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="29dp"-->
+        <!--android:id="@+id/imageViewWFC"-->
+        <!--android:src="@drawable/wfc"-->
+        <!--android:layout_weight="0.84"/>-->
 
         <ImageView
+            android:id="@+id/imageViewShare"
             android:layout_width="wrap_content"
             android:layout_height="25dp"
-            android:id="@+id/imageViewShare"
-            android:src="@drawable/sharethis48"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:src="@drawable/sharethis48" />
     </LinearLayout>
 
 </RelativeLayout>

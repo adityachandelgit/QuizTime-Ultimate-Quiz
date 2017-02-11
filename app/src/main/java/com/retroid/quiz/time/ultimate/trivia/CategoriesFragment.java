@@ -139,7 +139,7 @@ public class CategoriesFragment extends Fragment {
     void createFragSetBundle(int mode) {
         Fragment fragment = new PlayingFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(PlayingFragment.PLAYINGMODE, mode);
+        bundle.putInt(PlayingFragment.PLAYING_MODE, mode);
         fragment.setArguments(bundle);
         getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, fragment)

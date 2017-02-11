@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
-import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
@@ -21,10 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.logging.Handler;
 
 /**
  * Created by Aditya on 11-03-2015.
@@ -35,13 +30,16 @@ public class SettingsFragment extends Fragment {
     Switch musicSwitch, effectsSwitch;
     Button btnUpdateQuestions;
     SharedPreferences preferences;
+    MyMediaPlayer player;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_settings, container, false);
 
+        player = MyMediaPlayer.getInstance();
+
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        boolean playBgMusic = preferences.getBoolean("playbackgroundmusic", false);
+        final boolean playBgMusic = preferences.getBoolean("playbackgroundmusic", false);
         boolean soundeffects = preferences.getBoolean("soundeffects", false);
 
         musicSwitch = (Switch) v.findViewById(R.id.backgroundMusicSwitch);
@@ -54,18 +52,12 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!isChecked) {
-                    if(HostingActivity.mediaPlayer != null) {
-                        if (HostingActivity.mediaPlayer.isPlaying()) {
-                            HostingActivity.mediaPlayer.stop();
-                            //HostingActivity.mediaPlayer.release();
-                        }
-                    }
+                    player.sp.autoPause();
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putBoolean("playbackgroundmusic", false);
                     editor.apply();
                 } else {
-                    HostingActivity.mediaPlayer = new MediaPlayer();
-                    PlaySounds.playBackgroundMusic(getActivity(), HostingActivity.mediaPlayer, "backgroundMusic.mp3");
+                    PlayQuickSounds.playSound(getActivity(), R.raw.bg_music);
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putBoolean("playbackgroundmusic", true);
                     editor.apply();
@@ -83,7 +75,7 @@ public class SettingsFragment extends Fragment {
         effectsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(!isChecked) {
+                if (!isChecked) {
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putBoolean("soundeffects", false);
                     editor.apply();
@@ -94,8 +86,6 @@ public class SettingsFragment extends Fragment {
                 }
             }
         });
-
-
 
         btnUpdateQuestions = (Button) v.findViewById(R.id.updateQuestionsButton);
         btnUpdateQuestions.setOnClickListener(new View.OnClickListener() {
@@ -143,17 +133,13 @@ public class SettingsFragment extends Fragment {
                 }
             }
         });
-
-
         return v;
     }
-
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
-
 
 }

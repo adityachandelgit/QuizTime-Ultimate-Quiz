@@ -8,10 +8,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +19,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.startapp.android.publish.Ad;
-import com.startapp.android.publish.AdEventListener;
-import com.startapp.android.publish.StartAppAd;
 
 
 public class DashboardFragment extends Fragment {
@@ -54,7 +50,7 @@ public class DashboardFragment extends Fragment {
             public void onClick(View v) {
                 Fragment fragment = new PlayingFragment();
                 Bundle bundle = new Bundle();
-                bundle.putInt(PlayingFragment.PLAYINGMODE, 0);
+                bundle.putInt(PlayingFragment.PLAYING_MODE, 0);
                 fragment.setArguments(bundle);
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, fragment)
@@ -152,7 +148,7 @@ public class DashboardFragment extends Fragment {
             }
         });
 
-        imvWFC = (ImageView) v.findViewById(R.id.imageViewWFC);
+        /*imvWFC = (ImageView) v.findViewById(R.id.imageViewWFC);
         imvWFC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -178,7 +174,7 @@ public class DashboardFragment extends Fragment {
                             }
                         }).show();
             }
-        });
+        });*/
 
         imvShare = (ImageView) v.findViewById(R.id.imageViewShare);
         imvShare.setOnClickListener(new View.OnClickListener() {

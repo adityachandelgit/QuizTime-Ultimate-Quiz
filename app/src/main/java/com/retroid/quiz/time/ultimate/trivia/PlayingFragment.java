@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -15,7 +13,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,26 +35,25 @@ Economics = 7, Religion = 8, People = 9; Tech =10; Food = 11, Music = 12, Politi
 
 public class PlayingFragment extends Fragment {
 
+    public static final int DB_END = 7525;
+    public static final int QUESTION_INDEX_CURSOR = 6;
+    final static int questionsPerQuiz = 20;
+    static final String PLAYING_MODE = "playing_mode";
+    static boolean playEffects, playBackGrndMusic;
     TextView tvOption3, tvOption2, tvOption1, tvOption4, quesTV, scoreTV, questionNoTV, difficultyTV, categoryTV, halfTV, doubleChoiceTV, skipQuesTV, flyingScoreTV;
     Handler handler = new Handler();
     int currentScore, questionsAttempted, mode, startingCursorPos, startingArrayPos, previousHighScore;
     int answeredCorrectly = 0;
     int questionNumbCounter = 0;
     int flyingScoreDP = 0;
-    final static int questionsPerQuiz = 20;
     long scoreMultiplier = 0;
-    static boolean playEffects, playBackGrndMusic;
-
     ProgressBar progressBar;
     CountDownTimer countDownTimer;
     Thread thread;
     Cursor cursor;
     SharedPreferences preferences;
-
-    static final String PLAYINGMODE = "playing_mode";
-
     Activity parentActivity;
-    //Appnext appnext;
+    MyMediaPlayer player = MyMediaPlayer.getInstance();
 
     @Override
     public void onAttach(Activity activity) {
@@ -69,105 +65,83 @@ public class PlayingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_playing, container, false);
 
-        //appnext = new Appnext(parentActivity);
-        //appnext.setAppID("f0d002db-475a-4226-a2b9-83e531e54625"); // Set your AppID
-
         SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(parentActivity.getFilesDir().getAbsolutePath() + "/retrospect.dat", null);
         cursor = db.query("quiz", null, null, null, null, null, null, null);
 
         Bundle bundle = getArguments();
-        mode = bundle.getInt(PLAYINGMODE);
+        mode = bundle.getInt(PLAYING_MODE);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(parentActivity);
-        previousHighScore = preferences.getInt("highest_score_all", 0);
-        playEffects = preferences.getBoolean("soundeffects", true);
-        playBackGrndMusic = preferences.getBoolean("playbackgroundmusic", true);
+        previousHighScore = preferences.getInt(PREFS.HIGHEST_SCORE_ALL, 0);
+        playEffects = preferences.getBoolean(PREFS.SOUND_EFFECTS, true);
+        playBackGrndMusic = preferences.getBoolean(PREFS.PLAY_BG_MUSIC, true);
 
         if (playEffects) {
-            if (HostingActivity.mediaPlayer != null) {
-                if (HostingActivity.mediaPlayer.isPlaying()) {
-                    HostingActivity.mediaPlayer.stop();
-                    HostingActivity.stopBgForPlaying = true;
-                    //HostingActivity.mediaPlayer.release();
-                }
-            }
+            player.sp.autoPause();
         }
 
         currentScore = 0;
         questionsAttempted = 0;
-
         flyingScoreDP = getResources().getDimensionPixelSize(R.dimen.flyingScoreDimen);
 
         switch (mode) {
-            case 0:
-                startingCursorPos = preferences.getInt("cursor_position_all", 0);
+            case CATEGORY.ALL:
+                startingCursorPos = preferences.getInt(CURSOR_POSITION.ALL, 0);
                 cursor.moveToPosition(startingCursorPos);
                 //startingArrayPos = preferences.getInt("array_position_all", 0);
                 break;
-            case 1:
-                startingCursorPos = preferences.getInt("cursor_position_geography", 7525); //7525
+            case CATEGORY.GEO:
+                startingCursorPos = preferences.getInt(CURSOR_POSITION.GEO, DB_END); //7525
                 cursor.moveToPosition(startingCursorPos);
                 //startingArrayPos = preferences.getInt("array_position_geography", HostingActivity.quizDb.size() - 1);
                 break;
-            case 2:
-                startingCursorPos = preferences.getInt("cursor_position_entertainment", 7525);
+            case CATEGORY.ENTERTAINMENT:
+                startingCursorPos = preferences.getInt(CURSOR_POSITION.ENTERTAINMENT, DB_END);
                 cursor.moveToPosition(startingCursorPos);
-                //startingArrayPos = preferences.getInt("array_position_entertainment", HostingActivity.quizDb.size() - 1);
                 break;
-            case 3:
-                startingCursorPos = preferences.getInt("cursor_position_history", 7525);
+            case CATEGORY.HISTORY:
+                startingCursorPos = preferences.getInt(CURSOR_POSITION.HISTORY, DB_END);
                 cursor.moveToPosition(startingCursorPos);
-                //startingArrayPos = preferences.getInt("array_position_history", HostingActivity.quizDb.size() - 1);
                 break;
-            case 4:
-                startingCursorPos = preferences.getInt("cursor_position_art", 7525);
+            case CATEGORY.ART:
+                startingCursorPos = preferences.getInt(CURSOR_POSITION.ART, DB_END);
                 cursor.moveToPosition(startingCursorPos);
-                //startingArrayPos = preferences.getInt("array_position_art", HostingActivity.quizDb.size() - 1);
                 break;
-            case 5:
-                startingCursorPos = preferences.getInt("cursor_position_science", 7525);
+            case CATEGORY.SCIENCE:
+                startingCursorPos = preferences.getInt(CURSOR_POSITION.SCIENCE, DB_END);
                 cursor.moveToPosition(startingCursorPos);
-                //startingArrayPos = preferences.getInt("array_position_science", HostingActivity.quizDb.size() - 1);
                 break;
-            case 6:
-                startingCursorPos = preferences.getInt("cursor_position_sports", 7525);
+            case CATEGORY.SPORTS:
+                startingCursorPos = preferences.getInt(CURSOR_POSITION.SPORTS, DB_END);
                 cursor.moveToPosition(startingCursorPos);
-                //startingArrayPos = preferences.getInt("array_position_sports", HostingActivity.quizDb.size() - 1);
                 break;
-            case 7:
-                startingCursorPos = preferences.getInt("cursor_position_economics", 7525);
+            case CATEGORY.ECONOMICS:
+                startingCursorPos = preferences.getInt(CURSOR_POSITION.ECONOMICS, DB_END);
                 cursor.moveToPosition(startingCursorPos);
-                //startingArrayPos = preferences.getInt("array_position_economics", HostingActivity.quizDb.size() - 1);
                 break;
-            case 8:
-                startingCursorPos = preferences.getInt("cursor_position_religion", 7525);
+            case CATEGORY.RELIGION:
+                startingCursorPos = preferences.getInt(CURSOR_POSITION.RELIGION, DB_END);
                 cursor.moveToPosition(startingCursorPos);
-                //startingArrayPos = preferences.getInt("array_position_religion", HostingActivity.quizDb.size() - 1);
                 break;
-            case 9:
-                startingCursorPos = preferences.getInt("cursor_position_people", 7525);
+            case CATEGORY.PEOPLE:
+                startingCursorPos = preferences.getInt(CURSOR_POSITION.PEOPLE, DB_END);
                 cursor.moveToPosition(startingCursorPos);
-                //startingArrayPos = preferences.getInt("array_position_people", HostingActivity.quizDb.size() - 1);
                 break;
-            case 10:
-                startingCursorPos = preferences.getInt("cursor_position_technology", 7525);
+            case CATEGORY.TECH:
+                startingCursorPos = preferences.getInt(CURSOR_POSITION.TECH, DB_END);
                 cursor.moveToPosition(startingCursorPos);
-                //startingArrayPos = preferences.getInt("array_position_technology", HostingActivity.quizDb.size() - 1);
                 break;
-            case 11:
-                startingCursorPos = preferences.getInt("cursor_position_food", 7525);
+            case CATEGORY.FOOD:
+                startingCursorPos = preferences.getInt(CURSOR_POSITION.FOOD, DB_END);
                 cursor.moveToPosition(startingCursorPos);
-                //startingArrayPos = preferences.getInt("array_position_food", HostingActivity.quizDb.size() - 1);
                 break;
-            case 12:
-                startingCursorPos = preferences.getInt("cursor_position_music", 7525);
+            case CATEGORY.MUSIC:
+                startingCursorPos = preferences.getInt(CURSOR_POSITION.MUSIC, DB_END);
                 cursor.moveToPosition(startingCursorPos);
-                //startingArrayPos = preferences.getInt("array_position_music", HostingActivity.quizDb.size() - 1);
                 break;
-            case 13:
-                startingCursorPos = preferences.getInt("cursor_position_politics", 7525);
+            case CATEGORY.POLITICS:
+                startingCursorPos = preferences.getInt(CURSOR_POSITION.POLITICS, DB_END);
                 cursor.moveToPosition(startingCursorPos);
-                //startingArrayPos = preferences.getInt("array_position_politics", HostingActivity.quizDb.size() - 1);
                 break;
         }
 
@@ -205,72 +179,71 @@ public class PlayingFragment extends Fragment {
         SharedPreferences.Editor editor = preferences.edit();
 
         switch (mode) {
-            case 0:
-                editor.putInt("cursor_position_all", cursor.getPosition());
-                editor.putInt("array_position_all", startingArrayPos);
+            case CATEGORY.ALL:
+                editor.putInt(CURSOR_POSITION.ALL, cursor.getPosition());
+                editor.putInt(CURSOR_POSITION.ALL, startingArrayPos);
                 break;
-            case 1:
-                editor.putInt("cursor_position_geography", cursor.getPosition());
-                editor.putInt("array_position_geography", startingArrayPos);
+            case CATEGORY.GEO:
+                editor.putInt(CURSOR_POSITION.GEO, cursor.getPosition());
+                editor.putInt(CURSOR_POSITION.GEO, startingArrayPos);
                 break;
-            case 2:
-                editor.putInt("cursor_position_entertainment", cursor.getPosition());
-                editor.putInt("array_position_entertainment", startingArrayPos);
+            case CATEGORY.ENTERTAINMENT:
+                editor.putInt(CURSOR_POSITION.ENTERTAINMENT, cursor.getPosition());
+                editor.putInt(CURSOR_POSITION.ENTERTAINMENT, startingArrayPos);
                 break;
-            case 3:
-                editor.putInt("cursor_position_history", cursor.getPosition());
-                editor.putInt("array_position_history", startingArrayPos);
+            case CATEGORY.HISTORY:
+                editor.putInt(CURSOR_POSITION.HISTORY, cursor.getPosition());
+                editor.putInt(CURSOR_POSITION.HISTORY, startingArrayPos);
                 break;
-            case 4:
-                editor.putInt("cursor_position_art", cursor.getPosition());
-                editor.putInt("array_position_art", startingArrayPos);
+            case CATEGORY.ART:
+                editor.putInt(CURSOR_POSITION.ART, cursor.getPosition());
+                editor.putInt(CURSOR_POSITION.ART, startingArrayPos);
                 break;
-            case 5:
-                editor.putInt("cursor_position_science", cursor.getPosition());
-                editor.putInt("array_position_science", startingArrayPos);
+            case CATEGORY.SCIENCE:
+                editor.putInt(CURSOR_POSITION.SCIENCE, cursor.getPosition());
+                editor.putInt(CURSOR_POSITION.SCIENCE, startingArrayPos);
                 break;
-            case 6:
-                editor.putInt("cursor_position_sports", cursor.getPosition());
-                editor.putInt("array_position_sports", startingArrayPos);
+            case CATEGORY.SPORTS:
+                editor.putInt(CURSOR_POSITION.SPORTS, cursor.getPosition());
+                editor.putInt(CURSOR_POSITION.SPORTS, startingArrayPos);
                 break;
-            case 7:
-                editor.putInt("cursor_position_economics", cursor.getPosition());
-                editor.putInt("array_position_economics", startingArrayPos);
+            case CATEGORY.ECONOMICS:
+                editor.putInt(CURSOR_POSITION.ECONOMICS, cursor.getPosition());
+                editor.putInt(CURSOR_POSITION.ECONOMICS, startingArrayPos);
                 break;
-            case 8:
-                editor.putInt("cursor_position_religion", cursor.getPosition());
-                editor.putInt("array_position_religion", startingArrayPos);
+            case CATEGORY.RELIGION:
+                editor.putInt(CURSOR_POSITION.RELIGION, cursor.getPosition());
+                editor.putInt(CURSOR_POSITION.RELIGION, startingArrayPos);
                 break;
-            case 9:
-                editor.putInt("cursor_position_people", cursor.getPosition());
-                editor.putInt("array_position_people", startingArrayPos);
+            case CATEGORY.PEOPLE:
+                editor.putInt(CURSOR_POSITION.PEOPLE, cursor.getPosition());
+                editor.putInt(CURSOR_POSITION.PEOPLE, startingArrayPos);
                 break;
-            case 10:
-                editor.putInt("cursor_position_technology", cursor.getPosition());
-                editor.putInt("array_position_technology", startingArrayPos);
+            case CATEGORY.TECH:
+                editor.putInt(CURSOR_POSITION.TECH, cursor.getPosition());
+                editor.putInt(CURSOR_POSITION.TECH, startingArrayPos);
                 break;
-            case 11:
-                editor.putInt("cursor_position_food", cursor.getPosition());
-                editor.putInt("array_position_food", startingArrayPos);
+            case CATEGORY.FOOD:
+                editor.putInt(CURSOR_POSITION.FOOD, cursor.getPosition());
+                editor.putInt(CURSOR_POSITION.FOOD, startingArrayPos);
                 break;
-            case 12:
-                editor.putInt("cursor_position_music", cursor.getPosition());
-                editor.putInt("array_position_music", startingArrayPos);
+            case CATEGORY.MUSIC:
+                editor.putInt(CURSOR_POSITION.MUSIC, cursor.getPosition());
+                editor.putInt(CURSOR_POSITION.MUSIC, startingArrayPos);
                 break;
-            case 13:
-                editor.putInt("cursor_position_politics", cursor.getPosition());
-                editor.putInt("array_position_politics", startingArrayPos);
+            case CATEGORY.POLITICS:
+                editor.putInt(CURSOR_POSITION.POLITICS, cursor.getPosition());
+                editor.putInt(CURSOR_POSITION.POLITICS, startingArrayPos);
                 break;
         }
 
         if (previousHighScore < currentScore) {
-            editor.putInt("highest_score_all", currentScore);
+            editor.putInt(PREFS.HIGHEST_SCORE_ALL, currentScore);
         }
 
         editor.apply();
 
     }
-
 
     void nextQuestion() {
 
@@ -278,7 +251,7 @@ public class PlayingFragment extends Fragment {
         flyingScoreTV.setText("");
 
         if (questionNumbCounter > questionsPerQuiz) {
-            int marathonScore = preferences.getInt("highest_score_all", 0);
+            int marathonScore = preferences.getInt(PREFS.HIGHEST_SCORE_ALL, 0);
             String message;
             if (currentScore > marathonScore) {
                 message = "Woo! You just beat the highest score!\n\nPrevious high score was: " + previousHighScore + "\n\nAnswered correctly: " + answeredCorrectly + " / " + questionsPerQuiz;
@@ -292,8 +265,11 @@ public class PlayingFragment extends Fragment {
                         public void onClick(DialogInterface dialog, int which) {
                             HostingActivity.stopBgForPlaying = false;
                             if (playEffects && playBackGrndMusic) {
-                                HostingActivity.mediaPlayer = new MediaPlayer();
-                                PlaySounds.playBackgroundMusic(parentActivity, HostingActivity.mediaPlayer, "backgroundMusic.mp3");
+                                if (player.mp.isPlaying()) {
+                                    player.mp.stop();
+                                    player.mp.release();
+                                    PlayQuickSounds.playSound(parentActivity, R.raw.bg_music);
+                                }
                             }
                             FragmentManager fm = getActivity().getSupportFragmentManager();
                             for (int i = 0; i < fm.getBackStackEntryCount(); ++i) {
@@ -332,271 +308,46 @@ public class PlayingFragment extends Fragment {
 
             switch (mode) {
                 case 1:
-                    while (true) {
-                        if (!cursor.getString(6).equalsIgnoreCase("Geography")) {
-                            if(cursor.isFirst()) {
-                                cursor.moveToLast();
-                            } else {
-                                cursor.moveToPrevious();
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                /*while (true) {
-                    if (!HostingActivity.quizDb.get(startingArrayPos).getCategory().equalsIgnoreCase("Geography")) {
-                        startingArrayPos--;
-                    } else {
-                        break;
-                    }
-                }*/
+                    getNextQuestion(QUESTION_INDEX_CURSOR, "Geography");
                     break;
                 case 2:
-                    while (true) {
-                        if (!cursor.getString(6).equalsIgnoreCase("Entertainment")) {
-                            if(cursor.isFirst()) {
-                                cursor.moveToLast();
-                            } else {
-                                cursor.moveToPrevious();
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                /*while (true) {
-                    if (!HostingActivity.quizDb.get(startingArrayPos).getCategory().equalsIgnoreCase("Entertainment")) {
-                        startingArrayPos--;
-                    } else {
-                        break;
-                    }
-                }*/
+                    getNextQuestion(QUESTION_INDEX_CURSOR, "Entertainment");
                     break;
                 case 3:
-                    while (true) {
-                        if (!cursor.getString(6).equalsIgnoreCase("History")) {
-                            if(cursor.isFirst()) {
-                                cursor.moveToLast();
-                            } else {
-                                cursor.moveToPrevious();
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                /*while (true) {
-                    if (!HostingActivity.quizDb.get(startingArrayPos).getCategory().equalsIgnoreCase("History")) {
-                        startingArrayPos--;
-                    } else {
-                        break;
-                    }
-                }*/
+                    getNextQuestion(QUESTION_INDEX_CURSOR, "History");
                     break;
                 case 4:
-                    while (true) {
-                        if (!cursor.getString(6).equalsIgnoreCase("Art and Literature")) {
-                            if(cursor.isFirst()) {
-                                cursor.moveToLast();
-                            } else {
-                                cursor.moveToPrevious();
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                /*while (true) {
-                    if (!HostingActivity.quizDb.get(startingArrayPos).getCategory().equalsIgnoreCase("Art and Literature")) {
-                        startingArrayPos--;
-                    } else {
-                        break;
-                    }
-                }*/
+                    getNextQuestion(QUESTION_INDEX_CURSOR, "Art and Literature");
                     break;
                 case 5:
-                    while (true) {
-                        if (!cursor.getString(6).equalsIgnoreCase("Science and Nature")) {
-                            if(cursor.isFirst()) {
-                                cursor.moveToLast();
-                            } else {
-                                cursor.moveToPrevious();
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                /*while (true) {
-                    if (!HostingActivity.quizDb.get(startingArrayPos).getCategory().equalsIgnoreCase("Science and Nature")) {
-                        startingArrayPos--;
-                    } else {
-                        break;
-                    }
-                }*/
+                    getNextQuestion(QUESTION_INDEX_CURSOR, "Science and Nature");
                     break;
                 case 6:
-                    while (true) {
-                        if (!cursor.getString(6).equalsIgnoreCase("Sports and Games")) {
-                            if(cursor.isFirst()) {
-                                cursor.moveToLast();
-                            } else {
-                                cursor.moveToPrevious();
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                /*while (true) {
-                    if (!HostingActivity.quizDb.get(startingArrayPos).getCategory().equalsIgnoreCase("Sports and Games")) {
-                        startingArrayPos--;
-                    } else {
-                        break;
-                    }
-                }*/
+                    getNextQuestion(QUESTION_INDEX_CURSOR, "Sports and Games");
                     break;
                 case 7:
-                    while (true) {
-                        if (!cursor.getString(6).equalsIgnoreCase("Economics")) {
-                            if(cursor.isFirst()) {
-                                cursor.moveToLast();
-                            } else {
-                                cursor.moveToPrevious();
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                /*while (true) {
-                    if (!HostingActivity.quizDb.get(startingArrayPos).getCategory().equalsIgnoreCase("Economics")) {
-                        startingArrayPos--;
-                    } else {
-                        break;
-                    }
-                }*/
+                    getNextQuestion(QUESTION_INDEX_CURSOR, "Economics");
                     break;
                 case 8:
-                    while (true) {
-                        if (!cursor.getString(6).equalsIgnoreCase("Religion")) {
-                            if(cursor.isFirst()) {
-                                cursor.moveToLast();
-                            } else {
-                                cursor.moveToPrevious();
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                /*while (true) {
-                    if (!HostingActivity.quizDb.get(startingArrayPos).getCategory().equalsIgnoreCase("Religion")) {
-                        startingArrayPos--;
-                    } else {
-                        break;
-                    }
-                }*/
+                    getNextQuestion(QUESTION_INDEX_CURSOR, "Religion");
                     break;
                 case 9:
-                    while (true) {
-                        if (!cursor.getString(6).equalsIgnoreCase("People")) {
-                            if(cursor.isFirst()) {
-                                cursor.moveToLast();
-                            } else {
-                                cursor.moveToPrevious();
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                /*while (true) {
-                    if (!HostingActivity.quizDb.get(startingArrayPos).getCategory().equalsIgnoreCase("People")) {
-                        startingArrayPos--;
-                    } else {
-                        break;
-                    }
-                }*/
+                    getNextQuestion(QUESTION_INDEX_CURSOR, "People");
                     break;
                 case 10:
-                    while (true) {
-                        if (!cursor.getString(6).equalsIgnoreCase("Technology")) {
-                            if(cursor.isFirst()) {
-                                cursor.moveToLast();
-                            } else {
-                                cursor.moveToPrevious();
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                /*while (true) {
-                    if (!HostingActivity.quizDb.get(startingArrayPos).getCategory().equalsIgnoreCase("Technology")) {
-                        startingArrayPos--;
-                    } else {
-                        break;
-                    }
-                }*/
+                    getNextQuestion(QUESTION_INDEX_CURSOR, "Technology");
                     break;
                 case 11:
-                    while (true) {
-                        if (!cursor.getString(6).equalsIgnoreCase("Food")) {
-                            if(cursor.isFirst()) {
-                                cursor.moveToLast();
-                            } else {
-                                cursor.moveToPrevious();
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                /*while (true) {
-                    if (!HostingActivity.quizDb.get(startingArrayPos).getCategory().equalsIgnoreCase("Food")) {
-                        startingArrayPos--;
-                    } else {
-                        break;
-                    }
-                }*/
+                    getNextQuestion(QUESTION_INDEX_CURSOR, "Food");
                     break;
                 case 12:
-                    while (true) {
-                        if (!cursor.getString(6).equalsIgnoreCase("Music")) {
-                            if(cursor.isFirst()) {
-                                cursor.moveToLast();
-                            } else {
-                                cursor.moveToPrevious();
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                /*while (true) {
-                    if (!HostingActivity.quizDb.get(startingArrayPos).getCategory().equalsIgnoreCase("Music")) {
-                        startingArrayPos--;
-                    } else {
-                        break;
-                    }
-                }*/
+                    getNextQuestion(QUESTION_INDEX_CURSOR, "Music");
                     break;
                 case 13:
-                    while (true) {
-                        if (!cursor.getString(6).equalsIgnoreCase("Politics")) {
-                            if(cursor.isFirst()) {
-                                cursor.moveToLast();
-                            } else {
-                                cursor.moveToPrevious();
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                /*while (true) {
-                    if (!HostingActivity.quizDb.get(startingArrayPos).getCategory().equalsIgnoreCase("Politics")) {
-                        startingArrayPos--;
-                    } else {
-                        break;
-                    }
-                }*/
+                    getNextQuestion(QUESTION_INDEX_CURSOR, "Politics");
                     break;
             }
-
-
         }
-
-
         questionsAttempted++;
 
         if (thread != null) {
@@ -605,7 +356,6 @@ public class PlayingFragment extends Fragment {
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
-
         scoreMultiplier = 0;
         thread = new Thread(new Runnable() {
             @Override
@@ -620,7 +370,6 @@ public class PlayingFragment extends Fragment {
                             }
 
                             public void onFinish() {
-
                             }
                         }.start();
                     }
@@ -629,25 +378,9 @@ public class PlayingFragment extends Fragment {
 
         });
         thread.start();
-
         if (playEffects) {
-            if (HostingActivity.mediaPlayer != null) {
-                if (HostingActivity.mediaPlayer.isPlaying()) {
-                    HostingActivity.mediaPlayer.stop();
-                    HostingActivity.mediaPlayer.release();
-                    HostingActivity.mediaPlayer = new MediaPlayer();
-                    PlaySounds.playBackgroundMusic(parentActivity, HostingActivity.mediaPlayer, "countdown.mp3");
-                } else {
-                    HostingActivity.mediaPlayer = new MediaPlayer();
-                    PlaySounds.playBackgroundMusic(parentActivity, HostingActivity.mediaPlayer, "countdown.mp3");
-                }
-            } else {
-                HostingActivity.mediaPlayer = new MediaPlayer();
-                PlaySounds.playBackgroundMusic(parentActivity, HostingActivity.mediaPlayer, "countdown.mp3");
-            }
-
+            PlayQuickSounds.playSound(parentActivity, R.raw.countdown);
         }
-
 
         tvOption1.setVisibility(View.VISIBLE);
         tvOption2.setVisibility(View.VISIBLE);
@@ -716,176 +449,98 @@ public class PlayingFragment extends Fragment {
         tvOption1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tvOption1.setClickable(false);
-                tvOption2.setClickable(false);
-                tvOption3.setClickable(false);
-                tvOption4.setClickable(false);
-                if (tvOption1.getText().toString().equalsIgnoreCase(answer)) {
-                    tvOption1.setBackgroundResource(R.drawable.button_correct_green);
-                    if (playEffects) {
-                        stopCountdownMusicAndPlayCorrectBeep();
-                    }
-                    flyingScoreTV.setVisibility(View.VISIBLE);
-                    flyingScoreTV.setText("+" + scoreMultiplier);
-                    flyingScoreTV.startAnimation(flyingTranslateAnim);
-                    answeredCorrectly++;
-                    currentScore += scoreMultiplier;
-                    scoreTV.setText("Score: " + currentScore);
-                    countDownTimer.cancel();
-                    delay();
-                } else {
-                    tvOption1.setBackgroundResource(R.drawable.button_wrong_red);
-                    if (playEffects) {
-                        stopCountdownMusicAndWrongBeep();
-                    }
-                    countDownTimer.cancel();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (tvOption2.getText().toString().equalsIgnoreCase(answer)) {
-                                tvOption2.setBackgroundResource(R.drawable.button_correct_green);
-                            } else if (tvOption3.getText().toString().equalsIgnoreCase(answer)) {
-                                tvOption3.setBackgroundResource(R.drawable.button_correct_green);
-                            } else if (tvOption4.getText().toString().equalsIgnoreCase(answer)) {
-                                tvOption4.setBackgroundResource(R.drawable.button_correct_green);
-                            }
-                            delay();
-                        }
-                    }, 1000);
-                }
+                HandleAnswerTextViews(answer, flyingTranslateAnim, tvOption1,
+                        new TextView[]{tvOption2, tvOption3, tvOption4});
             }
         });
 
         tvOption2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tvOption1.setClickable(false);
-                tvOption2.setClickable(false);
-                tvOption3.setClickable(false);
-                tvOption4.setClickable(false);
-                if (tvOption2.getText().toString().equalsIgnoreCase(answer)) {
-                    tvOption2.setBackgroundResource(R.drawable.button_correct_green);
-                    if (playEffects) {
-                        stopCountdownMusicAndPlayCorrectBeep();
-                    }
-                    flyingScoreTV.setVisibility(View.VISIBLE);
-                    flyingScoreTV.setText("+" + scoreMultiplier);
-                    flyingScoreTV.startAnimation(flyingTranslateAnim);
-                    answeredCorrectly++;
-                    currentScore += scoreMultiplier;
-                    scoreTV.setText("Score: " + currentScore);
-                    countDownTimer.cancel();
-                    delay();
-                } else {
-                    tvOption2.setBackgroundResource(R.drawable.button_wrong_red);
-                    if (playEffects) {
-                        stopCountdownMusicAndWrongBeep();
-                    }
-                    countDownTimer.cancel();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (tvOption1.getText().toString().equalsIgnoreCase(answer)) {
-                                tvOption1.setBackgroundResource(R.drawable.button_correct_green);
-                            } else if (tvOption3.getText().toString().equalsIgnoreCase(answer)) {
-                                tvOption3.setBackgroundResource(R.drawable.button_correct_green);
-                            } else if (tvOption4.getText().toString().equalsIgnoreCase(answer)) {
-                                tvOption4.setBackgroundResource(R.drawable.button_correct_green);
-                            }
-                            delay();
-                        }
-                    }, 1000);
-                }
+                HandleAnswerTextViews(answer, flyingTranslateAnim, tvOption2,
+                        new TextView[]{tvOption1, tvOption3, tvOption4});
             }
         });
 
         tvOption3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tvOption1.setClickable(false);
-                tvOption2.setClickable(false);
-                tvOption3.setClickable(false);
-                tvOption4.setClickable(false);
-                if (tvOption3.getText().toString().equalsIgnoreCase(answer)) {
-                    tvOption3.setBackgroundResource(R.drawable.button_correct_green);
-                    if (playEffects) {
-                        stopCountdownMusicAndPlayCorrectBeep();
-                    }
-                    flyingScoreTV.setVisibility(View.VISIBLE);
-                    flyingScoreTV.setText("+" + scoreMultiplier);
-                    flyingScoreTV.startAnimation(flyingTranslateAnim);
-                    answeredCorrectly++;
-                    currentScore += scoreMultiplier;
-                    scoreTV.setText("Score: " + currentScore);
-                    countDownTimer.cancel();
-                    delay();
-                } else {
-                    tvOption3.setBackgroundResource(R.drawable.button_wrong_red);
-                    if (playEffects) {
-                        stopCountdownMusicAndWrongBeep();
-                    }
-                    countDownTimer.cancel();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (tvOption1.getText().toString().equalsIgnoreCase(answer)) {
-                                tvOption1.setBackgroundResource(R.drawable.button_correct_green);
-                            } else if (tvOption2.getText().toString().equalsIgnoreCase(answer)) {
-                                tvOption2.setBackgroundResource(R.drawable.button_correct_green);
-                            } else if (tvOption4.getText().toString().equalsIgnoreCase(answer)) {
-                                tvOption4.setBackgroundResource(R.drawable.button_correct_green);
-                            }
-                            delay();
-                        }
-                    }, 1000);
-                }
+                HandleAnswerTextViews(answer, flyingTranslateAnim, tvOption3,
+                        new TextView[]{tvOption1, tvOption2, tvOption4});
             }
         });
 
         tvOption4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tvOption1.setClickable(false);
-                tvOption2.setClickable(false);
-                tvOption3.setClickable(false);
-                tvOption4.setClickable(false);
-                if (tvOption4.getText().toString().equalsIgnoreCase(answer)) {
-                    tvOption4.setBackgroundResource(R.drawable.button_correct_green);
-                    if (playEffects) {
-                        stopCountdownMusicAndPlayCorrectBeep();
-                    }
-                    flyingScoreTV.setVisibility(View.VISIBLE);
-                    flyingScoreTV.setText("+" + scoreMultiplier);
-                    flyingScoreTV.startAnimation(flyingTranslateAnim);
-                    answeredCorrectly++;
-                    currentScore += scoreMultiplier;
-                    scoreTV.setText("Score: " + currentScore);
-                    countDownTimer.cancel();
-                    delay();
-                } else {
-                    if (playEffects) {
-                        stopCountdownMusicAndWrongBeep();
-                    }
-                    tvOption4.setBackgroundResource(R.drawable.button_wrong_red);
-                    countDownTimer.cancel();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (tvOption1.getText().toString().equalsIgnoreCase(answer)) {
-                                tvOption1.setBackgroundResource(R.drawable.button_correct_green);
-                            } else if (tvOption2.getText().toString().equalsIgnoreCase(answer)) {
-                                tvOption2.setBackgroundResource(R.drawable.button_correct_green);
-                            } else if (tvOption3.getText().toString().equalsIgnoreCase(answer)) {
-                                tvOption3.setBackgroundResource(R.drawable.button_correct_green);
-                            }
-                            delay();
-                        }
-                    }, 1000);
-                }
+                HandleAnswerTextViews(answer, flyingTranslateAnim, tvOption4,
+                        new TextView[]{tvOption1, tvOption2, tvOption3});
             }
         });
+    }
 
+    private void HandleAnswerTextViews(final String answer,
+                                       TranslateAnimation flyingTranslateAnim,
+                                       TextView selectedTv,
+                                       final TextView[] otherTvs) {
+        selectedTv.setClickable(false);
+        otherTvs[0].setClickable(false);
+        otherTvs[1].setClickable(false);
+        otherTvs[2].setClickable(false);
+        if (selectedTv.getText().toString().equalsIgnoreCase(answer)) {
+            selectedTv.setBackgroundResource(R.drawable.button_correct_green);
+            if (playEffects) {
+                stopCountdownMusicAndPlayCorrectBeep();
+            }
+            flyingScoreTV.setVisibility(View.VISIBLE);
+            flyingScoreTV.setText("+" + scoreMultiplier);
+            flyingScoreTV.startAnimation(flyingTranslateAnim);
+            answeredCorrectly++;
+            currentScore += scoreMultiplier;
+            scoreTV.setText("Score: " + currentScore);
+            countDownTimer.cancel();
+            delay();
+        } else {
+            selectedTv.setBackgroundResource(R.drawable.button_wrong_red);
+            if (playEffects) {
+                stopCountdownMusicAndWrongBeep();
+            }
+            countDownTimer.cancel();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (otherTvs[0].getText().toString().equalsIgnoreCase(answer)) {
+                        otherTvs[0].setBackgroundResource(R.drawable.button_correct_green);
+                    } else if (otherTvs[1].getText().toString().equalsIgnoreCase(answer)) {
+                        otherTvs[1].setBackgroundResource(R.drawable.button_correct_green);
+                    } else if (otherTvs[2].getText().toString().equalsIgnoreCase(answer)) {
+                        otherTvs[2].setBackgroundResource(R.drawable.button_correct_green);
+                    }
+                    delay();
+                }
+            }, 1000);
+        }
+    }
 
+    private void getNextQuestion(int cursorIndex, String category) {
+        while (true) {
+            if (!cursor.getString(cursorIndex).equalsIgnoreCase(category)) {
+                if (cursor.isFirst()) {
+                    cursor.moveToLast();
+                } else {
+                    cursor.moveToPrevious();
+                }
+            } else {
+                break;
+            }
+        }
+        /*while (true) {
+            if (!HostingActivity.quizDb.get(startingArrayPos).getCategory().equalsIgnoreCase("Geography")) {
+                startingArrayPos--;
+            } else {
+                break;
+            }
+        }*/
     }
 
     void delay() {
@@ -898,23 +553,51 @@ public class PlayingFragment extends Fragment {
     }
 
     void stopCountdownMusicAndWrongBeep() {
-        if (HostingActivity.mediaPlayer != null) {
-            HostingActivity.mediaPlayer.stop();
-            HostingActivity.mediaPlayer.release();
-            HostingActivity.mediaPlayer = null;
-            HostingActivity.mediaPlayer = new MediaPlayer();
-            PlaySounds.playBackgroundMusic(parentActivity, HostingActivity.mediaPlayer, "wrongBeep.mp3");
-        }
+        PlayQuickSounds.playSound(parentActivity, R.raw.wrong_beep);
     }
 
     void stopCountdownMusicAndPlayCorrectBeep() {
-        if (HostingActivity.mediaPlayer != null) {
-            HostingActivity.mediaPlayer.stop();
-            HostingActivity.mediaPlayer.release();
-            HostingActivity.mediaPlayer = null;
-            HostingActivity.mediaPlayer = new MediaPlayer();
-            PlaySounds.playBackgroundMusic(parentActivity, HostingActivity.mediaPlayer, "correctbeep.mp3");
-        }
+        PlayQuickSounds.playSound(parentActivity, R.raw.correct_beep);
+    }
+
+    static final class PREFS {
+        static final String HIGHEST_SCORE_ALL = "highest_score_all";
+        static final String SOUND_EFFECTS = "soundeffects";
+        static final String PLAY_BG_MUSIC = "playbackgroundmusic";
+    }
+
+    static final class CATEGORY {
+        static final int ALL = 0;
+        static final int GEO = 1;
+        static final int ENTERTAINMENT = 2;
+        static final int HISTORY = 3;
+        static final int ART = 4;
+        static final int SCIENCE = 5;
+        static final int SPORTS = 6;
+        static final int ECONOMICS = 7;
+        static final int RELIGION = 8;
+        static final int PEOPLE = 9;
+        static final int TECH = 10;
+        static final int FOOD = 11;
+        static final int MUSIC = 12;
+        static final int POLITICS = 13;
+    }
+
+    static final class CURSOR_POSITION {
+        static final String ALL = "cursor_position_all";
+        static final String GEO = "cursor_position_geography";
+        static final String ENTERTAINMENT = "cursor_position_entertainment";
+        static final String HISTORY = "cursor_position_history";
+        static final String ART = "cursor_position_art";
+        static final String SCIENCE = "cursor_position_science";
+        static final String SPORTS = "cursor_position_sports";
+        static final String ECONOMICS = "cursor_position_economics";
+        static final String RELIGION = "cursor_position_religion";
+        static final String PEOPLE = "cursor_position_people";
+        static final String TECH = "cursor_position_technology";
+        static final String FOOD = "cursor_position_food";
+        static final String MUSIC = "cursor_position_music";
+        static final String POLITICS = "cursor_position_politics";
     }
 
 
