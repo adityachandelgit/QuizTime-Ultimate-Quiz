@@ -12,7 +12,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 
 import com.appnext.ads.interstitial.Interstitial;
 import com.appnext.core.callbacks.OnAdClicked;
@@ -21,6 +20,7 @@ import com.appnext.core.callbacks.OnAdError;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 
 public class HostingActivity extends ActionBarActivity {
@@ -40,10 +40,16 @@ public class HostingActivity extends ActionBarActivity {
         player = MyMediaPlayer.getInstance();
         if (player.sp == null) {
             player.sp = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+            player.soundId[3] = player.sp.load(this, R.raw.bg_music, 1);
             player.soundId[0] = player.sp.load(this, R.raw.correct_beep, 1);
             player.soundId[1] = player.sp.load(this, R.raw.wrong_beep, 1);
             player.soundId[2] = player.sp.load(this, R.raw.countdown, 1);
-            player.soundId[3] = player.sp.load(this, R.raw.bg_music, 1);
+        }
+
+        try {
+            TimeUnit.MILLISECONDS.sleep(15);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         interstitial_Ad = new Interstitial(this, "12e98ef2-87cd-4894-a32d-2c64e96d5cc2");
@@ -82,7 +88,6 @@ public class HostingActivity extends ActionBarActivity {
         playBackgroundMusic = preferences.getBoolean("playbackgroundmusic", true);
         new MyAsyncTask().execute();
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new DashboardFragment()).commit();
-        Log.d("Aditya", "" + preferences.getBoolean("soundeffects", false));
 
     }
 
