@@ -32,7 +32,6 @@ Economics = 7, Religion = 8, People = 9; Tech =10; Food = 11, Music = 12, Politi
 
 *///////////////////////////////////////////////////////////////////////////////
 
-
 public class PlayingFragment extends Fragment {
 
     public static final int DB_END = 7525;
@@ -54,6 +53,7 @@ public class PlayingFragment extends Fragment {
     SharedPreferences preferences;
     Activity parentActivity;
     MyMediaPlayer player = MyMediaPlayer.getInstance();
+    SharedPreferences.Editor editor;
 
     @Override
     public void onAttach(Activity activity) {
@@ -76,6 +76,8 @@ public class PlayingFragment extends Fragment {
         playEffects = preferences.getBoolean(PREFS.SOUND_EFFECTS, true);
         playBackGrndMusic = preferences.getBoolean(PREFS.PLAY_BG_MUSIC, true);
 
+        editor = preferences.edit();
+
         if (playEffects) {
             player.sp.autoPause();
         }
@@ -88,12 +90,10 @@ public class PlayingFragment extends Fragment {
             case CATEGORY.ALL:
                 startingCursorPos = preferences.getInt(CURSOR_POSITION.ALL, 0);
                 cursor.moveToPosition(startingCursorPos);
-                //startingArrayPos = preferences.getInt("array_position_all", 0);
                 break;
             case CATEGORY.GEO:
-                startingCursorPos = preferences.getInt(CURSOR_POSITION.GEO, DB_END); //7525
+                startingCursorPos = preferences.getInt(CURSOR_POSITION.GEO, DB_END);
                 cursor.moveToPosition(startingCursorPos);
-                //startingArrayPos = preferences.getInt("array_position_geography", HostingActivity.quizDb.size() - 1);
                 break;
             case CATEGORY.ENTERTAINMENT:
                 startingCursorPos = preferences.getInt(CURSOR_POSITION.ENTERTAINMENT, DB_END);
@@ -161,9 +161,7 @@ public class PlayingFragment extends Fragment {
         questionNoTV = (TextView) v.findViewById(R.id.questionNoTV);
         difficultyTV = (TextView) v.findViewById(R.id.difficultyTV);
         categoryTV = (TextView) v.findViewById(R.id.category_textView);
-
         nextQuestion();
-
         return v;
     }
 
@@ -174,75 +172,11 @@ public class PlayingFragment extends Fragment {
 
     @Override
     public void onPause() {
-        super.onPause();
-        preferences = PreferenceManager.getDefaultSharedPreferences(parentActivity);
-        SharedPreferences.Editor editor = preferences.edit();
-
-        switch (mode) {
-            case CATEGORY.ALL:
-                editor.putInt(CURSOR_POSITION.ALL, cursor.getPosition());
-                editor.putInt(CURSOR_POSITION.ALL, startingArrayPos);
-                break;
-            case CATEGORY.GEO:
-                editor.putInt(CURSOR_POSITION.GEO, cursor.getPosition());
-                editor.putInt(CURSOR_POSITION.GEO, startingArrayPos);
-                break;
-            case CATEGORY.ENTERTAINMENT:
-                editor.putInt(CURSOR_POSITION.ENTERTAINMENT, cursor.getPosition());
-                editor.putInt(CURSOR_POSITION.ENTERTAINMENT, startingArrayPos);
-                break;
-            case CATEGORY.HISTORY:
-                editor.putInt(CURSOR_POSITION.HISTORY, cursor.getPosition());
-                editor.putInt(CURSOR_POSITION.HISTORY, startingArrayPos);
-                break;
-            case CATEGORY.ART:
-                editor.putInt(CURSOR_POSITION.ART, cursor.getPosition());
-                editor.putInt(CURSOR_POSITION.ART, startingArrayPos);
-                break;
-            case CATEGORY.SCIENCE:
-                editor.putInt(CURSOR_POSITION.SCIENCE, cursor.getPosition());
-                editor.putInt(CURSOR_POSITION.SCIENCE, startingArrayPos);
-                break;
-            case CATEGORY.SPORTS:
-                editor.putInt(CURSOR_POSITION.SPORTS, cursor.getPosition());
-                editor.putInt(CURSOR_POSITION.SPORTS, startingArrayPos);
-                break;
-            case CATEGORY.ECONOMICS:
-                editor.putInt(CURSOR_POSITION.ECONOMICS, cursor.getPosition());
-                editor.putInt(CURSOR_POSITION.ECONOMICS, startingArrayPos);
-                break;
-            case CATEGORY.RELIGION:
-                editor.putInt(CURSOR_POSITION.RELIGION, cursor.getPosition());
-                editor.putInt(CURSOR_POSITION.RELIGION, startingArrayPos);
-                break;
-            case CATEGORY.PEOPLE:
-                editor.putInt(CURSOR_POSITION.PEOPLE, cursor.getPosition());
-                editor.putInt(CURSOR_POSITION.PEOPLE, startingArrayPos);
-                break;
-            case CATEGORY.TECH:
-                editor.putInt(CURSOR_POSITION.TECH, cursor.getPosition());
-                editor.putInt(CURSOR_POSITION.TECH, startingArrayPos);
-                break;
-            case CATEGORY.FOOD:
-                editor.putInt(CURSOR_POSITION.FOOD, cursor.getPosition());
-                editor.putInt(CURSOR_POSITION.FOOD, startingArrayPos);
-                break;
-            case CATEGORY.MUSIC:
-                editor.putInt(CURSOR_POSITION.MUSIC, cursor.getPosition());
-                editor.putInt(CURSOR_POSITION.MUSIC, startingArrayPos);
-                break;
-            case CATEGORY.POLITICS:
-                editor.putInt(CURSOR_POSITION.POLITICS, cursor.getPosition());
-                editor.putInt(CURSOR_POSITION.POLITICS, startingArrayPos);
-                break;
-        }
-
         if (previousHighScore < currentScore) {
             editor.putInt(PREFS.HIGHEST_SCORE_ALL, currentScore);
+            editor.apply();
         }
-
-        editor.apply();
-
+        super.onPause();
     }
 
     void nextQuestion() {
@@ -255,6 +189,10 @@ public class PlayingFragment extends Fragment {
             String message;
             if (currentScore > marathonScore) {
                 message = "Woo! You just beat the highest score!\n\nPrevious high score was: " + previousHighScore + "\n\nAnswered correctly: " + answeredCorrectly + " / " + questionsPerQuiz;
+                if (previousHighScore < currentScore) {
+                    editor.putInt(PREFS.HIGHEST_SCORE_ALL, currentScore);
+                    editor.apply();
+                }
             } else {
                 message = "Highest score is still: " + marathonScore + "\n\nCorrect Answers: " + answeredCorrectly + " / " + questionsPerQuiz + "\n\nKeep on trying!";
             }
@@ -265,11 +203,7 @@ public class PlayingFragment extends Fragment {
                         public void onClick(DialogInterface dialog, int which) {
                             HostingActivity.stopBgForPlaying = false;
                             if (playEffects && playBackGrndMusic) {
-                                if (player.mp.isPlaying()) {
-                                    player.mp.stop();
-                                    player.mp.release();
-                                    PlayQuickSounds.playSound(parentActivity, R.raw.bg_music);
-                                }
+                                PlayQuickSounds.playSound(parentActivity, R.raw.bg_music);
                             }
                             FragmentManager fm = getActivity().getSupportFragmentManager();
                             for (int i = 0; i < fm.getBackStackEntryCount(); ++i) {
@@ -289,23 +223,12 @@ public class PlayingFragment extends Fragment {
             } else {
                 cursor.moveToFirst();
             }
-            /*if(startingArrayPos == HostingActivity.quizDb.size() - 1) {
-                startingArrayPos = 0;
-            } else {
-                startingArrayPos++;
-            }*/
         } else {
             if (!cursor.isBeforeFirst()) {
                 cursor.moveToPrevious();
             } else {
                 cursor.moveToLast();
             }
-            /*if(startingArrayPos == 0) {
-                startingArrayPos = HostingActivity.quizDb.size() - 1;
-            } else {
-                startingArrayPos--;
-            }*/
-
             switch (mode) {
                 case 1:
                     getNextQuestion(QUESTION_INDEX_CURSOR, "Geography");
@@ -399,13 +322,10 @@ public class PlayingFragment extends Fragment {
 
         questionNoTV.setText("Question: " + questionsAttempted);
         difficultyTV.setText("Difficulty: " + String.valueOf(cursor.getInt(7)));
-        //difficultyTV.setText("Difficulty: " + HostingActivity.quizDb.get(startingArrayPos).getDifficulty());
 
         categoryTV.setText("Category: " + cursor.getString(6));
-        //categoryTV.setText("Category: " + HostingActivity.quizDb.get(startingArrayPos).getCategory());
 
         quesTV.setText(cursor.getString(1));
-        //quesTV.setText(HostingActivity.quizDb.get(startingArrayPos).getQuestion());
 
         final ArrayList<String> options = new ArrayList<>();
         options.add(cursor.getString(2));
@@ -413,18 +333,12 @@ public class PlayingFragment extends Fragment {
         options.add(cursor.getString(4));
         options.add(cursor.getString(5));
 
-        /*options.add(HostingActivity.quizDb.get(startingArrayPos).getCorrectAnswer());
-        options.add(HostingActivity.quizDb.get(startingArrayPos).getWrongAnswer1());
-        options.add(HostingActivity.quizDb.get(startingArrayPos).getWrongAnswer2());
-        options.add(HostingActivity.quizDb.get(startingArrayPos).getWrongAnswer3());*/
-
         Collections.shuffle(options);
         tvOption1.setText(options.get(0));
         tvOption2.setText(options.get(1));
         tvOption3.setText(options.get(2));
         tvOption4.setText(options.get(3));
 
-        //final String answer = HostingActivity.quizDb.get(startingArrayPos).getCorrectAnswer();
         final String answer = cursor.getString(2);
 
         final TranslateAnimation flyingTranslateAnim = new TranslateAnimation(0, 0, Animation.RELATIVE_TO_SELF, Animation.RELATIVE_TO_SELF - flyingScoreDP);
@@ -524,6 +438,9 @@ public class PlayingFragment extends Fragment {
 
     private void getNextQuestion(int cursorIndex, String category) {
         while (true) {
+            if (cursor.getPosition() == -1) {
+                cursor.moveToLast();
+            }
             if (!cursor.getString(cursorIndex).equalsIgnoreCase(category)) {
                 if (cursor.isFirst()) {
                     cursor.moveToLast();
@@ -531,16 +448,55 @@ public class PlayingFragment extends Fragment {
                     cursor.moveToPrevious();
                 }
             } else {
+                switch (mode) {
+                    case CATEGORY.ALL:
+                        editor.putInt(CURSOR_POSITION.ALL, cursor.getPosition());
+                        break;
+                    case CATEGORY.GEO:
+                        editor.putInt(CURSOR_POSITION.GEO, cursor.getPosition());
+                        break;
+                    case CATEGORY.ENTERTAINMENT:
+                        editor.putInt(CURSOR_POSITION.ENTERTAINMENT, cursor.getPosition());
+                        break;
+                    case CATEGORY.HISTORY:
+                        editor.putInt(CURSOR_POSITION.HISTORY, cursor.getPosition());
+                        break;
+                    case CATEGORY.ART:
+                        editor.putInt(CURSOR_POSITION.ART, cursor.getPosition());
+                        break;
+                    case CATEGORY.SCIENCE:
+                        editor.putInt(CURSOR_POSITION.SCIENCE, cursor.getPosition());
+                        break;
+                    case CATEGORY.SPORTS:
+                        editor.putInt(CURSOR_POSITION.SPORTS, cursor.getPosition());
+                        break;
+                    case CATEGORY.ECONOMICS:
+                        editor.putInt(CURSOR_POSITION.ECONOMICS, cursor.getPosition());
+                        break;
+                    case CATEGORY.RELIGION:
+                        editor.putInt(CURSOR_POSITION.RELIGION, cursor.getPosition());
+                        break;
+                    case CATEGORY.PEOPLE:
+                        editor.putInt(CURSOR_POSITION.PEOPLE, cursor.getPosition());
+                        break;
+                    case CATEGORY.TECH:
+                        editor.putInt(CURSOR_POSITION.TECH, cursor.getPosition());
+                        break;
+                    case CATEGORY.FOOD:
+                        editor.putInt(CURSOR_POSITION.FOOD, cursor.getPosition());
+                        break;
+                    case CATEGORY.MUSIC:
+                        editor.putInt(CURSOR_POSITION.MUSIC, cursor.getPosition());
+                        break;
+                    case CATEGORY.POLITICS:
+                        editor.putInt(CURSOR_POSITION.POLITICS, cursor.getPosition());
+                        break;
+                }
+                editor.apply();
+                editor.commit();
                 break;
             }
         }
-        /*while (true) {
-            if (!HostingActivity.quizDb.get(startingArrayPos).getCategory().equalsIgnoreCase("Geography")) {
-                startingArrayPos--;
-            } else {
-                break;
-            }
-        }*/
     }
 
     void delay() {
@@ -599,6 +555,4 @@ public class PlayingFragment extends Fragment {
         static final String MUSIC = "cursor_position_music";
         static final String POLITICS = "cursor_position_politics";
     }
-
-
 }

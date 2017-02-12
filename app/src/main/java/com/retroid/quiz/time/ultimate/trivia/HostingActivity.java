@@ -14,7 +14,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 
 import com.appnext.ads.interstitial.Interstitial;
-import com.appnext.core.callbacks.OnAdClicked;
 import com.appnext.core.callbacks.OnAdClosed;
 import com.appnext.core.callbacks.OnAdError;
 
@@ -47,7 +46,7 @@ public class HostingActivity extends ActionBarActivity {
         }
 
         try {
-            TimeUnit.MILLISECONDS.sleep(15);
+            TimeUnit.MILLISECONDS.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -61,13 +60,7 @@ public class HostingActivity extends ActionBarActivity {
                 System.exit(0);
             }
         });
-        interstitial_Ad.setOnAdClickedCallback(new OnAdClicked() {
-            @Override
-            public void adClicked() {
-                HostingActivity.this.finish();
-                System.exit(0);
-            }
-        });
+
         interstitial_Ad.setOnAdErrorCallback(new OnAdError() {
             @Override
             public void adError(String error) {

@@ -8,8 +8,8 @@ android {
         applicationId "com.retroid.quiz.time.ultimate.trivia"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 7
-        versionName "1.0.5"
+        versionCode 11
+        versionName "1.0.7"
     }
     buildTypes {
         release {
