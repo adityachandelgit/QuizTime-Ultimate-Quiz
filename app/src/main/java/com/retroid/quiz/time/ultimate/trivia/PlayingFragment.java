@@ -223,6 +223,9 @@ public class PlayingFragment extends Fragment {
             } else {
                 cursor.moveToFirst();
             }
+            editor.putInt(CURSOR_POSITION.ALL, cursor.getPosition());
+            editor.apply();
+            editor.commit();
         } else {
             if (!cursor.isBeforeFirst()) {
                 cursor.moveToPrevious();
