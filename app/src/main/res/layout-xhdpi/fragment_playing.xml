@@ -1,0 +1,212 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20sp"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <TextView
+                android:id="@+id/scoreTV"
+                android:layout_width="match_parent"
+                android:layout_height="20sp"
+                android:layout_marginRight="12sp"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:gravity="center"
+                android:text="Score: 0"
+                android:textColor="#fff" />
+
+            <TextView
+                android:id="@+id/difficultyTV"
+                android:layout_width="match_parent"
+                android:layout_height="20sp"
+                android:layout_marginLeft="6sp"
+                android:layout_marginRight="6sp"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:gravity="center"
+                android:text="Difficulty: 1"
+                android:textColor="#fff" />
+
+            <TextView
+                android:id="@+id/questionNoTV"
+                android:layout_width="match_parent"
+                android:layout_height="20sp"
+                android:layout_marginLeft="12sp"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:gravity="center"
+                android:text="Question: 0"
+                android:textColor="#fff" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/category_textView"
+            android:layout_width="match_parent"
+            android:layout_height="27sp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/linearLayout"
+            android:layout_marginLeft="10sp"
+            android:layout_marginRight="10sp"
+            android:layout_marginTop="20sp"
+            android:background="@color/white"
+            android:gravity="center"
+            android:text="Category"
+            android:textColor="#fff"
+            android:textSize="15sp" />
+
+        <ProgressBar
+            android:id="@+id/progressBar2"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="12sp"
+            android:layout_below="@+id/category_textView"
+            android:layout_marginBottom="10sp"
+            android:layout_marginLeft="5sp"
+            android:layout_marginRight="5sp"
+            android:layout_marginTop="30sp"
+            android:progress="50"
+            android:progressDrawable="@drawable/progressbar2" />
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/progressBar2">
+
+            <ScrollView
+                android:id="@+id/question_scrollview"
+                android:layout_width="match_parent"
+                android:layout_height="150sp"
+                android:layout_alignEnd="@+id/option1TV"
+                android:layout_alignLeft="@+id/option1TV"
+                android:layout_alignRight="@+id/option1TV"
+                android:layout_alignStart="@+id/option1TV"
+                android:layout_marginTop="6sp"
+                android:fadeScrollbars="false"
+                android:fillViewport="true">
+
+                <TextView
+                    android:id="@+id/questionTV"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Question"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#fff"
+                    android:textSize="16sp" />
+
+            </ScrollView>
+
+            <TextView
+                android:id="@+id/flyingScoreTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/option1TV"
+                android:layout_centerHorizontal="true"
+                android:text="+400"
+                android:textColor="@color/android_green"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/option1TV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/question_scrollview"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="14sp"
+                android:layout_marginLeft="25sp"
+                android:layout_marginRight="25sp"
+                android:layout_marginTop="15sp"
+                android:width="250sp"
+                android:height="46sp"
+                android:background="@drawable/clickable_button"
+                android:gravity="center"
+                android:text="Option 1"
+                android:textColor="#fff"
+                android:textSize="14sp" />
+
+
+            <TextView
+                android:id="@+id/option2TV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/option1TV"
+                android:layout_marginBottom="15sp"
+                android:layout_marginLeft="25sp"
+                android:layout_marginRight="25sp"
+                android:width="250sp"
+                android:height="46sp"
+                android:background="@drawable/clickable_button"
+                android:gravity="center"
+                android:text="Option 2"
+                android:textColor="#fff"
+                android:textSize="14sp" />
+
+
+            <TextView
+                android:id="@+id/option3TV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/option2TV"
+                android:layout_marginBottom="15sp"
+                android:layout_marginLeft="25sp"
+                android:layout_marginRight="25sp"
+                android:width="250sp"
+                android:height="46sp"
+                android:background="@drawable/clickable_button"
+                android:gravity="center"
+                android:text="Option 3"
+                android:textColor="#fff"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/option4TV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/option3TV"
+                android:layout_marginLeft="25sp"
+                android:layout_marginRight="25sp"
+                android:width="250sp"
+                android:height="46sp"
+                android:background="@drawable/clickable_button"
+                android:gravity="center"
+                android:text="Option 4"
+                android:textColor="#fff"
+                android:textSize="14sp" />
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+
+</FrameLayout>
