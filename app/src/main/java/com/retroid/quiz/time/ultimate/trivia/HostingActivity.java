@@ -15,7 +15,6 @@ import android.support.v7.app.ActionBarActivity;
 
 import com.appnext.ads.interstitial.Interstitial;
 import com.appnext.core.callbacks.OnAdClosed;
-import com.appnext.core.callbacks.OnAdError;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -56,14 +55,6 @@ public class HostingActivity extends ActionBarActivity {
         interstitial_Ad.setOnAdClosedCallback(new OnAdClosed() {
             @Override
             public void onAdClosed() {
-                HostingActivity.this.finish();
-                System.exit(0);
-            }
-        });
-
-        interstitial_Ad.setOnAdErrorCallback(new OnAdError() {
-            @Override
-            public void adError(String error) {
                 HostingActivity.this.finish();
                 System.exit(0);
             }
