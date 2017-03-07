@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '25.0.2'
 
     defaultConfig {
         applicationId "com.retroid.quiz.time.ultimate.trivia"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 13
-        versionName "1.0.9"
+        versionCode 15
+        versionName "1.1.1"
     }
     buildTypes {
         release {
